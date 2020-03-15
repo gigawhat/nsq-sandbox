@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  lookupd:
+    image: nsqio/nsq:v1.2.0
+    command:
+      - nsqlookupd
+
+  nsqadmin:
+    image: nsqio/nsq:v1.2.0
+    depends_on:
+      - lookupd
+    command:
+      - nsqadmin
+      - -lookupd-http-address
+      - lookupd:4161
+    ports:
+      - "4171:4171"
+
+  nsqd:
+    image: nsqio/nsq:v1.2.0
+    depends_on:
+      - lookupd
+    command:
+      - nsqd
+      - -lookupd-tcp-address
+      - lookupd:4160
+
+  producer:
+    build: ../producer
+    depends_on:
+      - nsqd
+    # environment:
+    #   - FOREVER=true
+
+  consumer:
+    image: nsqio/nsq:v1.2.0
+    depends_on:
+      - nsqd
+    command:
+      - nsq_to_file
+      - --topic=test
+      - --output-dir=/tmp
+      - -lookupd-http-address
+      - lookupd:4161
+    volumes:
+      - "./output:/tmp"
+

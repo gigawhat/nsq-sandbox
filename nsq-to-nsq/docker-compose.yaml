@@ -1,0 +1,107 @@
+version: '3'
+
+services:
+  k8s-lookupd:
+    image: nsqio/nsq:v1.2.0
+    command:
+      - nsqlookupd
+    networks:
+      - k8s
+
+  k8s-nsqadmin:
+    image: nsqio/nsq:v1.2.0
+    depends_on:
+      - k8s-lookupd
+    command:
+      - nsqadmin
+      - -lookupd-http-address
+      - k8s-lookupd:4161
+    ports:
+      - "4171:4171"
+    networks:
+      - k8s
+
+  k8s-nsqd:
+    image: nsqio/nsq:v1.2.0
+    depends_on:
+      - k8s-lookupd
+    command: 
+      - nsqd
+      - -lookupd-tcp-address
+      - k8s-lookupd:4160
+    networks:
+      - k8s
+
+  k8s-producer:
+    build: ../producer
+    depends_on:
+      - k8s-nsqd
+    environment:
+      - NSQD_HOST=k8s-nsqd
+      - MSGS=5000
+    networks:
+      - k8s
+
+  vm-lookupd:
+    image: nsqio/nsq:v1.2.0
+    command:
+      - nsqlookupd
+    networks:
+      - vm
+
+  vm-nsqadmin:
+    image: nsqio/nsq:v1.2.0
+    depends_on:
+      - vm-lookupd
+    command:
+      - nsqadmin
+      - -lookupd-http-address
+      - vm-lookupd:4161
+    ports:
+      - "4172:4171"
+    networks:
+      - vm
+  
+  vm-nsqd-1: &vm-nsqd
+    image: nsqio/nsq:v1.2.0
+    hostname: vm-nsqd-1
+    depends_on:
+      - vm-lookupd
+    command: 
+      - nsqd
+      - -lookupd-tcp-address
+      - vm-lookupd:4160
+    networks:
+      - vm
+
+  vm-nsqd-2:
+    <<: *vm-nsqd
+    hostname: vm-nsqd-2
+
+  bridge:
+    image: nsqio/nsq:v1.2.0
+    depends_on:
+      - k8s-nsqd
+      - vm-nsqd-1
+      - vm-nsqd-2
+    command:
+      - nsq_to_nsq
+      - -lookupd-http-address
+      - k8s-lookupd:4161
+      - -topic
+      - test
+      - -destination-nsqd-tcp-address
+      - vm-nsqd-1:4150
+      - -destination-nsqd-tcp-address
+      - vm-nsqd-2:4150
+      - -destination-nsqd-tcp-address
+      - vm-nsqd-fake:4150
+      - -destination-topic
+      - test
+    networks:
+      - k8s
+      - vm
+
+networks:
+  k8s:
+  vm:
