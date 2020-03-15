@@ -1,8 +1,8 @@
 # Summary
-Repo for testing various nsq topologies.
+Repo for testing different nsq deployments.
 
 ## Producer
-All of the topologies share the same producer. The producer is a simple script that publishes a message once every .5 second to the `test` topic.  
+All of the deployments share the same producer. The producer is a simple script that publishes a message once every .5 second to the `test` topic.  
 
 The producer will default to publishing 1000 messages. This can be changed by setting the environment variable `MSGS` to the number of messages you'd like to publish.  
 

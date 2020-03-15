@@ -1,5 +1,5 @@
 # Summary
-This toplogoy runs 2 nsq clusters. One cluster running in same for example k8s and another clustering running on VMs outside of k8s.   
+This topology runs 2 nsq clusters. One cluster running in same for example k8s and another clustering running on VMs outside of k8s.   
 
 Assuming you can not route or resolve pod names from your VMs to your nsqd pods running in K8s, you can run `nsq_to_nsq` to consume messages from running on your nsqd pods running in k8s to a set of nsqd VMs. 
 
