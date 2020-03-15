@@ -1,16 +1,16 @@
 # Summary
-This topology runs 2 nsq clusters. One cluster running in same for example k8s and another clustering running on VMs outside of k8s.   
+This deployment runs 2 nsq clusters. One cluster running in say for example k8s and another clustering running on VMs outside of k8s.   
 
-Assuming you can not route or resolve pod names from your VMs to your nsqd pods running in K8s, you can run `nsq_to_nsq` to consume messages from running on your nsqd pods running in k8s to a set of nsqd VMs. 
+Assuming you can not route or resolve pod names from your VMs to your nsqd pods running in K8s, you can run `nsq_to_nsq` to re-publish messages from nsq topics running in the k8s cluster to a set of nsqd VMs. 
 
 ## Topology
 * The following are nsq components running in the "K8s" cluster:  
-  * `nsqlookupd` - Manages topology information     
+  * `nsqlookupd` - Manages nsq topology information     
   * `nsqadmin` - Check topics, channels, etc. [Web ui](http://localhost:4171)  
-  * `nsqd` - Queues up messages  
-  * `producer` - Publishes messages to the topic     
+  * `nsqd` - nsqd instance  
+  * `producer` - Publishes messages to the `test` topic     
 * The following are nsq components running in the "VM" cluster:  
-  * `nsqlookupd` - Manages topology information  
+  * `nsqlookupd` - Manages nsq topology information  
   * `nsqadmin` - Check topics, channels, etc. [Web ui](http://localhost:4172)  
   * `vm-nsqd-1` - nsqd "VM"  
   * `vm-nsqd-2` - nsqd "VM"  

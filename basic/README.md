@@ -1,11 +1,11 @@
 # Summary
-Basic nsq topology.
+Basic nsq deployment.
 
 ## Topology
-`nsqlookupd` - Manages topology information.   
+`nsqlookupd` - Manages nsq topology information.   
 `nsqadmin` - Check topics, channels, etc. [Web ui](http://localhost:4171)
-`nsqd` - Queues up messages.  
-`producer` - Publishes messages to the topic. Connects to the nsqd service.  
+`nsqd` - Nsqd service.  
+`producer` - Publishes messages to the `test` topic. Connects to the nsqd service.  
 `consumer` - Runs the `nsq_to_file` utility. Consumes messages from the `test` topic and writes them to a file in the `./output` directory.  
 
 ## Running
